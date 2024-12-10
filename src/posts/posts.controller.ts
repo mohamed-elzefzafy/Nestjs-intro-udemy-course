@@ -1,9 +1,12 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req } from '@nestjs/common';
 import { PostsService } from './providers/posts.service';
 import { ApiOperation, ApiResponse, ApiTags , PartialType} from '@nestjs/swagger';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { PatchPostDto } from './dtos/patchPostDto';
 import { GetPostsDto } from './dtos/get-posts.dto';
+import { Request } from 'express';
+import { REQUEST_USER_KEY } from 'src/auth/constants/auth.constant';
+import { ActiveUser } from 'src/auth/decorators/active-user.decorator';
 
 
 
@@ -29,8 +32,10 @@ export class PostsController {
  
     })
     @Post()
-    public createPost (@Body() createPostDto : CreatePostDto) {
-        return this.postsService.createPost(createPostDto)
+    public createPost (@Body() createPostDto : CreatePostDto , @ActiveUser() user : ActiveUserData) {
+        console.log(user);
+        
+        return this.postsService.createPost(createPostDto , user);
     }
 
     @ApiOperation({

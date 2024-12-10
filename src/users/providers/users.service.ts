@@ -9,6 +9,11 @@ import {  ConfigType } from '@nestjs/config';
 import profileConfig from '../config/profile.config';
 import { CreateManyProvider } from './create-many.provider';
 import { CreateManyUsersDto } from '../dtos/create-many-users.dto';
+import { CreateUserProvider } from './create-user.provider';
+import { FindOneUserByEmailProvider } from './find-one-user-by-email.provider';
+import { FindUserByGoogleIdProvider } from './find-user-by-google-id.provider';
+import { GoogleUser } from '../interfaces/google-user.interface';
+import { CreateGoogleUserProvider } from './create-google-user.provider';
 
 
 /**
@@ -17,36 +22,20 @@ import { CreateManyUsersDto } from '../dtos/create-many-users.dto';
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private userReposiyrty: Repository<User>,
+    @InjectRepository(User) private userRepositry: Repository<User>,
     @Inject(profileConfig.KEY)
     private readonly  profileConfigration : ConfigType<typeof profileConfig>,
     private readonly dataSource : DataSource,
-    private readonly createManyProvider : CreateManyProvider
+    private readonly createManyProvider : CreateManyProvider,
+    private readonly createUserProvider: CreateUserProvider,
+    private readonly findOneUserByEmailProvider: FindOneUserByEmailProvider,
+    private readonly findUserByGoogleIdProvider : FindUserByGoogleIdProvider,
+    private readonly createGoogleUserProvider : CreateGoogleUserProvider,
   ) {}
 
   public async createUser(createUserDto: CreateUserDto) {
-    let existingUser =  undefined;
-    try {
-      existingUser =  await this.userReposiyrty.findOne({
-        where: { email: createUserDto.email },
-      });
-    } catch (error) {
-      throw new RequestTimeoutException("unable to process your request at moment please try again later" , {
-        description : "error connecting to database",
-      })
-    }
 
-    if (existingUser) {
-      throw new BadRequestException("User already exists")
-    }
-    let newUser = this.userReposiyrty.create(createUserDto);
-    try {
-    newUser = await this.userReposiyrty.save(newUser);
-    } catch (error) {
-      throw new RequestTimeoutException("unable to process your request at moment please try again")
-    }
-
-    return newUser;
+    return this.createUserProvider.createUser(createUserDto);
   }
   /**
    * method to get users from the users table
@@ -77,7 +66,7 @@ HttpStatus.MOVED_PERMANENTLY,
     let user = undefined;
 
     try {
-      user = await this.userReposiyrty.findOneBy({ id });
+      user = await this.userRepositry.findOneBy({ id });
    
     } catch (error) {
       throw new RequestTimeoutException("unable to process your request at moment please try again")
@@ -91,5 +80,17 @@ HttpStatus.MOVED_PERMANENTLY,
 
   public async createManyUsers(createManyUsersDto: CreateManyUsersDto) {
     return this.createManyProvider.createManyUsers(createManyUsersDto);
+  }
+
+  public findOneByEmail(email: string) {
+return this.findOneUserByEmailProvider.getUserByEmail(email)
+  }
+
+  public findOneByGoogleId(googleId: string) {
+    return this.findUserByGoogleIdProvider.findOneByGoogleId(googleId);
+  }
+
+  public async createGoogleUser(googleUser : GoogleUser) {
+ return await this.createGoogleUserProvider.createGoogleUser(googleUser);
   }
 }
