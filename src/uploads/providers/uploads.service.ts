@@ -34,7 +34,10 @@ const fileUpload :UploadFile = {
    // create an upload
    const upload = this.uploadRepository.create(fileUpload);
    // save the details to database
+   console.log(upload);
    return await this.uploadRepository.save(upload);
+
+   
 } catch (error) {
     throw new ConflictException(error);
 }
