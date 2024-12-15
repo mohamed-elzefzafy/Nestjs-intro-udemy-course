@@ -23,8 +23,6 @@ import { CreateGoogleUserProvider } from './create-google-user.provider';
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepositry: Repository<User>,
-    @Inject(profileConfig.KEY)
-    private readonly  profileConfigration : ConfigType<typeof profileConfig>,
     private readonly dataSource : DataSource,
     private readonly createManyProvider : CreateManyProvider,
     private readonly createUserProvider: CreateUserProvider,

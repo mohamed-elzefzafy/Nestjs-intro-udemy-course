@@ -34,7 +34,6 @@ const fileUpload :UploadFile = {
    // create an upload
    const upload = this.uploadRepository.create(fileUpload);
    // save the details to database
-   console.log(upload);
    return await this.uploadRepository.save(upload);
 
    
@@ -43,3 +42,4 @@ const fileUpload :UploadFile = {
 }
   }
 }
+
