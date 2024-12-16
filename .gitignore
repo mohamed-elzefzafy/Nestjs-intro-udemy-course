@@ -59,3 +59,5 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # client 
 client/nestjs-tutorial-react-app/node_modules
+
+typeorm-cli-config.ts
